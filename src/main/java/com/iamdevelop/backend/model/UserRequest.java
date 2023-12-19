@@ -3,7 +3,7 @@ package com.iamdevelop.backend.model;
 import lombok.Data;
 
 @Data
-public class TestRequest {
+public class UserRequest {
     private String email;
     private String password;
 }

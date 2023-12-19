@@ -1,8 +1,9 @@
 package com.iamdevelop.backend.api;
 
-import com.iamdevelop.backend.business.TestBussiness;
+import com.iamdevelop.backend.business.UserBusiness;
 import com.iamdevelop.backend.exception.BaseException;
-import com.iamdevelop.backend.model.TestRequest;
+import com.iamdevelop.backend.model.UserRequest;
+import com.iamdevelop.backend.model.UserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,18 +13,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/test")
-public class TestAPI {
+public class UserAPI {
 
-    private final TestBussiness testBussiness;
+    private final UserBusiness userBusiness;
 
-    public TestAPI(TestBussiness testBussiness) {
-        this.testBussiness = testBussiness;
+    public UserAPI(UserBusiness userBusiness) {
+        this.userBusiness = userBusiness;
     }
 
     @PostMapping
     @RequestMapping("/register")
-    public ResponseEntity<String> register(@RequestBody TestRequest request) throws BaseException{
-        String response = testBussiness.register(request);
+    public ResponseEntity<UserResponse> register(@RequestBody UserRequest req) throws BaseException {
+        UserResponse response = userBusiness.register(req);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

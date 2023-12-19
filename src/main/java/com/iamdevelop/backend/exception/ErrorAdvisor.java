@@ -14,10 +14,10 @@ public class ErrorAdvisor {
 
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> handleBaseException(BaseException e) {
-        ErrorResponse response = new ErrorResponse();
-        response.setStatus(HttpStatus.EXPECTATION_FAILED.value());
-        response.setErrorMessage(e.getMessage());
-        return new ResponseEntity<>(response,HttpStatus.EXPECTATION_FAILED);
+        ErrorResponse response1 = new ErrorResponse();
+        //response1.setStatus(HttpStatus.EXPECTATION_FAILED.value());
+        //response1.setErrorMessage(e.getMessage());
+        return new ResponseEntity<>(response1,HttpStatus.EXPECTATION_FAILED);
     }
 
     @Data
