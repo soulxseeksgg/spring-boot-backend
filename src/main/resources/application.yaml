@@ -6,3 +6,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/backend
     username: postgres
     password: syspass
+
+app:
+  token:
+    secret: m#mySecret@2023
+    issuer: BackendService

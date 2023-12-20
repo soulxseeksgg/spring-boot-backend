@@ -1,9 +1,10 @@
 package com.iamdevelop.backend.service;
 
-import com.iamdevelop.backend.entity.Address;
 import com.iamdevelop.backend.entity.User;
 import com.iamdevelop.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -18,6 +19,14 @@ public class UserService {
         user.setEmail(email);
         user.setPassword(password);
         return userRepository.save(user);
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public Optional<User> findById(String id){
+        return userRepository.findById(id);
     }
 
 }

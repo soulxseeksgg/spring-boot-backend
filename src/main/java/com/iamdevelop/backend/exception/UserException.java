@@ -5,7 +5,19 @@ public class UserException extends BaseException{
         super("user:"+code);
     }
 
+    public static UserException unauthorized(){
+        return new UserException("unauthorized");
+    }
+
     public static UserException emailNull(){
         return new UserException("register.email.null");
+    }
+
+    public static UserException loginFailed(){
+        return new UserException("login.email.failed");
+    }
+
+    public static UserException notFound(){
+        return new UserException("refresh-token.notfound");
     }
 }

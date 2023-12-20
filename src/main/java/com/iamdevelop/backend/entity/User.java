@@ -11,7 +11,7 @@ import java.util.List;
 @Entity(name = "tb_user")
 public class User extends BaseEntity {
 
-    @Column(length = 120, nullable = false)
+    @Column(length = 120, nullable = false, unique = true)
     private String email;
 
     @Column(length = 120, nullable = false)
