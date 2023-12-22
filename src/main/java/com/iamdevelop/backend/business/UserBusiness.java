@@ -9,30 +9,47 @@ import com.iamdevelop.backend.model.UserResponse;
 import com.iamdevelop.backend.service.TokenService;
 import com.iamdevelop.backend.service.UserService;
 import com.iamdevelop.backend.util.SecurityUtil;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
+@Log4j2
 public class UserBusiness {
     private final UserService userService;
     private final UserMapper userMapper;
 
     private final TokenService tokenService;
 
-    public UserBusiness(UserService userService, UserMapper userMapper, TokenService tokenService) {
+    private final KafkaTemplate<String ,String> kafkaTemplate;
+
+    public UserBusiness(UserService userService, UserMapper userMapper, TokenService tokenService, KafkaTemplate kafkaTemplate) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.tokenService = tokenService;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public UserResponse register(UserRequest request) throws BaseException {
         User user = userService.createUser(request.getEmail(), request.getPassword());
+
+        CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send("activation-email", "xxx gggg");
+        future.whenComplete((result, ex) -> {
+            if (ex == null) {
+                log.info("Kafka send sucess"+result.getProducerRecord());
+            } else {
+                log.error("Kafka send failed");
+            }
+        });
+
+
         return userMapper.toRegisterResponse(user);
     }
+
     
     public String refreshToken() throws BaseException{
         Optional<String> opt = SecurityUtil.getCurrentUserId();

@@ -1,4 +1,10 @@
+server:
+  port: 8080
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: "my-awesome-app"
   jpa:
     hibernate:
       ddl-auto: update
