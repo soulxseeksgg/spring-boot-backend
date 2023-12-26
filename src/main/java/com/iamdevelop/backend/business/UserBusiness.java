@@ -4,8 +4,7 @@ import com.iamdevelop.backend.entity.User;
 import com.iamdevelop.backend.exception.BaseException;
 import com.iamdevelop.backend.exception.UserException;
 import com.iamdevelop.backend.mapper.UserMapper;
-import com.iamdevelop.backend.model.UserRequest;
-import com.iamdevelop.backend.model.UserResponse;
+import com.iamdevelop.backend.model.*;
 import com.iamdevelop.backend.service.TokenService;
 import com.iamdevelop.backend.service.UserService;
 import com.iamdevelop.backend.util.SecurityUtil;
@@ -34,8 +33,8 @@ public class UserBusiness {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public UserResponse register(UserRequest request) throws BaseException {
-        User user = userService.createUser(request.getEmail(), request.getPassword());
+    public UserResponse register(UserRegisterRequest request) throws BaseException {
+        User user = userService.createUser(request.getEmail(),request.getUserName(), request.getPassword());
 
         CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send("activation-email", "xxx gggg");
         future.whenComplete((result, ex) -> {
@@ -68,7 +67,7 @@ public class UserBusiness {
         return tokenService.tokenize(user);
     }
 
-    public String login(UserRequest request) throws BaseException{
+    public String login(UserLoginRequest request) throws BaseException{
         Optional<User> opt = userService.findByEmail(request.getEmail());
 
         if(opt.isEmpty()){
@@ -77,5 +76,24 @@ public class UserBusiness {
         User user = opt.get();
 
         return tokenService.tokenize(user);
+    }
+
+    public String getUser(UserRequest request) throws BaseException {
+        Optional<User> opt = userService.findByEmail(request.getEmail());
+
+        if(opt.isEmpty()){
+            throw UserException.emailNull();
+        }
+        User user = opt.get();
+        return user.getUserName();
+    }
+
+    public UserResponse updateUserName(MUpdateUserNameRequest request) throws BaseException{
+        User user = userService.updateUserName(request.getEmail(), request.getUserName());
+        return userMapper.toRegisterResponse(user);
+    }
+
+    public void deleteUser(UserRequest request){
+        userService.deleteUser(request.getEmail());
     }
 }

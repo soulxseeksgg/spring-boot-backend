@@ -16,12 +16,13 @@ class TestUserService {
     @Order(1)
     @Test
     void createUser(){
-        User user = userService.createUser(TestData.email, TestData.password);
+        User user = userService.createUser(TestData.email,TestData.userName, TestData.password);
         Assertions.assertNotNull(user);
     }
 
     interface TestData{
         String email = "toon@mail.com";
+        String userName = "gg";
         String password ="123";
     }
 }
