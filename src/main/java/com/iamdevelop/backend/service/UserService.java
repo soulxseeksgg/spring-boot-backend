@@ -29,13 +29,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @Cacheable(value = "email", key = "#email", unless = "#result == null")
+    //@Cacheable(value = "email", key = "#email", unless = "#result == null")
     public Optional<User> findByEmail(String email) {
         log.info(">> call in function findByEmail");
         return userRepository.findByEmail(email);
     }
 
-    @CachePut(value = "user", key = "#email")
+    //@CachePut(value = "user", key = "#email")
     public User updateUserName(String email, String userName) throws BaseException {
 
         Optional<User> opt = findByEmail(email);
@@ -53,7 +53,7 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    @CacheEvict(value = "user", key = "#email")
+    //@CacheEvict(value = "user", key = "#email")
     public void deleteUser(String email){
         Optional<User> opt = findByEmail(email);
 

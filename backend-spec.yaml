@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment #<<< 1 deployment
+metadata:
+  name: backend #<< name deployment is backend
+  namespace: learning
+  labels:
+    customer: learning #<< ลูกค้าชื่อว่าอะไร
+    environment: development
+    app: backend
+spec: #<<< 2 pod spec link registry and useage mem and cpu
+  selector:
+    matchLabels:
+      app: backend
+  replicas: 2 #<<< pod ขั้นต่ำ 2 pod
+  strategy:
+    type: RollingUpdate #<< รูปแบบการ deployment
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - image: localhost:5000/learning/backend:latest  #<< image link from registry
+          name: backend
+          imagePullPolicy: Always #<< รูปแบบการดึง image ดึงตลอดเลย
+          ports:
+            - containerPort: 8080 #<< port ของ app ใช้
+          resources: # << resource ที่จะใช้ ใน 1 pod set by 1 pod
+            requests: # mem กับ cpu ขั้นต่ำ
+              memory: "256Mi"
+              cpu: "300m"
+            limits: # สูงสุดที่จะให้ได้
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe: # << check service ว่ายังทำงานได้อยู่
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 300 # เช็คที่วินาทที่ 90 แรกนะ
+            periodSeconds: 10 # และเช็คทุกๆ สิบวินาที
+          env: # 3 ทำ evalament คล้ายๆกับไฟล์ Docker compose
+            - name: SECRET_KAFKA_HOST #<<< ต้องตรงกันกับที่ set ไว้อยู่ในไฟล์ application.yaml
+              valueFrom:
+                secretKeyRef: # ได้จากไฟล์ secret
+                  name: backend
+                  key: kafka_host
+            - name: SECRET_KAFKA_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: backend
+                  key: kafka_port
+            - name: SECRET_DB_HOST
+              valueFrom: #set values
+                secretKeyRef:
+                  name: backend #namespae
+                  key: db_host #ที่ set อยู่ใน secret db_host namespace backend config secret
+            - name: SECRET_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: backend
+                  key: db_port
+            - name: SECRET_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: backend
+                  key: db_username
+            - name: SECRET_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend
+                  key: db_password
+            #- name: SECRET_REDIS_HOST
+            #  valueFrom:
+            #    secretKeyRef:
+            #      name: backend
+            #      key: redis_host
+            #- name: SECRET_REDIS_PORT
+            #  valueFrom:
+            #    secretKeyRef:
+            #      name: backend
+            #      key: redis_port
+            #- name: SECRET_REDIS_PASS
+            #  valueFrom:
+            #    secretKeyRef:
+            #      name: backend
+            #      key: redis_password
+            - name: SECRET_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: backend
+                  key: jwt_secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: learning
+  labels:
+    app: backend
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+  selector:
+    app: backend
+---
+apiVersion: autoscaling/v1  #auto scale
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend
+  namespace: learning
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  minReplicas: 2 #default port =2
+  maxReplicas: 2 # max scale to 4
+  targetCPUUtilizationPercentage: 80 # if cpu > 80%
