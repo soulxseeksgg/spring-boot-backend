@@ -26,7 +26,6 @@ public class SucurityConfig {
             ,"/user/login"
             ,"updateUserName"
             ,"/socket/**"
-            ,"chat/message"
     };
 
     private final TokenService tokenService;
@@ -43,7 +42,6 @@ public class SucurityConfig {
                        .requestMatchers(PUBLIC).permitAll()
                        .anyRequest().authenticated())
                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-               //.exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                .addFilterBefore(new TokenFilter(tokenService), UsernamePasswordAuthenticationFilter.class);
 
        return http.build();
@@ -64,5 +62,7 @@ public class SucurityConfig {
         source.registerCorsConfiguration("/**",config);
         return new CorsFilter(source);
     }
+
+
 
 }

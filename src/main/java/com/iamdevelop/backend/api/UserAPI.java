@@ -31,9 +31,11 @@ public class UserAPI {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserLoginRequest request) throws BaseException {
+    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest request) throws BaseException {
         String token = userBusiness.login(request);
-        return ResponseEntity.ok(token);
+        UserLoginResponse response = new UserLoginResponse();
+        response.setToken(token);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/getUserName")

@@ -14,7 +14,7 @@ public class UserException extends BaseException{
     }
 
     public static UserException loginFailed(){
-        return new UserException("login.email.failed");
+        return new UserException("user.login.failed");
     }
 
     public static UserException notFound(){
